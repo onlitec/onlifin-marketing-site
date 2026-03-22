@@ -1,0 +1,1 @@
+window.__ONLIFIN_PLATFORM_BASE_URL__ = window.__ONLIFIN_PLATFORM_BASE_URL__ || '';
