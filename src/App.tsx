@@ -24,6 +24,20 @@ const PLAN_DISPLAY_NAMES: Record<string, string> = {
   full: 'Completo',
 };
 
+type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'triennial';
+
+const BILLING_CYCLES: Array<{
+  code: BillingCycle;
+  label: string;
+  months: number;
+  badge?: string;
+}> = [
+  { code: 'yearly', label: 'Anual', months: 12, badge: 'Mais procurado' },
+  { code: 'monthly', label: 'Mensal', months: 1 },
+  { code: 'quarterly', label: 'Trimestral', months: 3 },
+  { code: 'triennial', label: 'Trienal', months: 36 },
+];
+
 declare global {
   interface Window {
     __ONLIFIN_PLATFORM_BASE_URL__?: string;
@@ -35,8 +49,7 @@ const PLANS = [
     code: 'basic',
     audience: 'Pessoa Física',
     name: 'Plano Básico',
-    price: 'R$ 29',
-    priceSuffix: '/mês',
+    monthlyPriceBrl: 29,
     highlighted: false,
     dark: false,
     buttonClassName:
@@ -54,8 +67,7 @@ const PLANS = [
     code: 'medium',
     audience: 'Pequeno Negócio',
     name: 'Plano Intermediário',
-    price: 'R$ 79',
-    priceSuffix: '/mês',
+    monthlyPriceBrl: 79,
     highlighted: true,
     dark: false,
     buttonClassName:
@@ -73,8 +85,7 @@ const PLANS = [
     code: 'full',
     audience: 'Operação Estruturada',
     name: 'Plano Completo',
-    price: 'R$ 199',
-    priceSuffix: '/mês',
+    monthlyPriceBrl: 199,
     highlighted: false,
     dark: true,
     buttonClassName:
@@ -89,6 +100,33 @@ const PLANS = [
     ],
   },
 ] as const;
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+
+const getBillingCycleDefinition = (billingCycle: BillingCycle) =>
+  BILLING_CYCLES.find((cycle) => cycle.code === billingCycle) || BILLING_CYCLES[0];
+
+const getCyclePrice = (monthlyPriceBrl: number, billingCycle: BillingCycle) =>
+  monthlyPriceBrl * getBillingCycleDefinition(billingCycle).months;
+
+const getCycleSuffix = (billingCycle: BillingCycle) => {
+  switch (billingCycle) {
+    case 'monthly':
+      return '/mês';
+    case 'quarterly':
+      return '/3 meses';
+    case 'yearly':
+      return '/ano';
+    case 'triennial':
+      return '/3 anos';
+    default:
+      return '';
+  }
+};
 
 const PLATFORM_PILLARS = [
   {
@@ -217,7 +255,21 @@ const Card = ({ children, className = "" }: { children: React.ReactNode, classNa
   </div>
 );
 
-const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: boolean, onClose: () => void, selectedPlan: string | null, onSelectPlan: (plan: string) => void }) => {
+const SignupModal = ({
+  isOpen,
+  onClose,
+  selectedPlan,
+  selectedBillingCycle,
+  onSelectPlan,
+  onSelectBillingCycle,
+}: {
+  isOpen: boolean,
+  onClose: () => void,
+  selectedPlan: string | null,
+  selectedBillingCycle: BillingCycle,
+  onSelectPlan: (plan: string) => void,
+  onSelectBillingCycle: (billingCycle: BillingCycle) => void,
+}) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -242,6 +294,28 @@ const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: 
             </p>
           </div>
 
+          <div className="mb-8 flex flex-wrap justify-center gap-3">
+            {BILLING_CYCLES.map((cycle) => {
+              const isActive = selectedBillingCycle === cycle.code;
+              return (
+                <button
+                  key={cycle.code}
+                  type="button"
+                  onClick={() => onSelectBillingCycle(cycle.code)}
+                  className={[
+                    'rounded-2xl border px-4 py-3 text-left transition-all',
+                    isActive ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
+                  ].join(' ')}
+                >
+                  <div className="text-xs font-black uppercase tracking-widest">{cycle.label}</div>
+                  <div className="mt-1 text-[11px] font-bold text-slate-400">
+                    {cycle.badge || `${cycle.months} mês${cycle.months > 1 ? 'es' : ''}`}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {PLANS.map((plan) => (
               <div
@@ -257,9 +331,12 @@ const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: 
                 </span>
                 <h3 className={`text-2xl font-black mb-4 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</h3>
                 <div className={`text-4xl font-black mb-6 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.price}
-                  <span className={`text-base ml-1 ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{plan.priceSuffix}</span>
+                  {formatCurrency(getCyclePrice(plan.monthlyPriceBrl, selectedBillingCycle))}
+                  <span className={`text-base ml-1 ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{getCycleSuffix(selectedBillingCycle)}</span>
                 </div>
+                <p className={`text-xs font-bold mb-6 ${plan.dark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {getBillingCycleDefinition(selectedBillingCycle).label} • equivalente a {formatCurrency(plan.monthlyPriceBrl)}/mês
+                </p>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className={`text-sm font-bold ${plan.dark ? 'text-slate-300' : 'text-slate-600'}`}>
@@ -318,11 +395,11 @@ const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: 
 
         if (loginResp.ok) {
           const token = normalizeRpcText(await loginResp.text());
-          window.location.href = `${getPlatformBaseUrl()}/login?signup=1&plan=${encodeURIComponent(selectedPlan)}&email=${encodeURIComponent(formData.email)}#token=${encodeURIComponent(token)}`;
+          window.location.href = `${getPlatformBaseUrl()}/login?signup=1&plan=${encodeURIComponent(selectedPlan)}&billingCycle=${encodeURIComponent(selectedBillingCycle)}&email=${encodeURIComponent(formData.email)}#token=${encodeURIComponent(token)}`;
           return;
         }
 
-        window.location.href = `${getPlatformBaseUrl()}/login?signup=1&plan=${encodeURIComponent(selectedPlan)}&email=${encodeURIComponent(formData.email)}`;
+        window.location.href = `${getPlatformBaseUrl()}/login?signup=1&plan=${encodeURIComponent(selectedPlan)}&billingCycle=${encodeURIComponent(selectedBillingCycle)}&email=${encodeURIComponent(formData.email)}`;
       } else {
         alert(data.message || "Erro no cadastro. Tente novamente.");
       }
@@ -344,7 +421,9 @@ const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: 
           <div className="mb-8">
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Criar sua conta</h2>
             <p className="text-slate-500 font-medium mt-2">Plano selecionado: <span className="text-blue-600 uppercase font-black">{PLAN_DISPLAY_NAMES[selectedPlan] || selectedPlan}</span></p>
-            <p className="text-xs text-slate-400 mt-1">Inicie seu teste grátis de 30 dias agora mesmo.</p>
+            <p className="text-xs text-slate-400 mt-1">
+              Ciclo selecionado: {getBillingCycleDefinition(selectedBillingCycle).label} • {formatCurrency(getCyclePrice((PLANS.find((plan) => plan.code === selectedPlan)?.monthlyPriceBrl) || 0, selectedBillingCycle))}{getCycleSuffix(selectedBillingCycle)}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -401,6 +480,7 @@ const SignupModal = ({ isOpen, onClose, selectedPlan, onSelectPlan }: { isOpen: 
 const LandingPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('yearly');
 
   const openSignup = (plan: string) => {
     setSelectedPlan(plan);
@@ -418,7 +498,9 @@ const LandingPage = () => {
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         selectedPlan={selectedPlan}
+        selectedBillingCycle={selectedBillingCycle}
         onSelectPlan={setSelectedPlan}
+        onSelectBillingCycle={setSelectedBillingCycle}
       />
       
       {/* Navbar */}
@@ -653,7 +735,7 @@ const LandingPage = () => {
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-4">Planos que acompanham você</h2>
             <p className="text-slate-500 font-medium text-lg">Comece grátis por 30 dias e escolha o melhor para sua necessidade.</p>
             <p className="text-slate-400 font-medium mt-3">
-              Cadastro, limites comerciais e valores foram preservados como estão hoje.
+              O cadastro agora suporta ciclos mensal, trimestral, anual e trienal conforme o provedor de pagamento ativo.
             </p>
           </div>
 
@@ -681,8 +763,8 @@ const LandingPage = () => {
                 </span>
                 <h4 className={`text-3xl font-black mb-4 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</h4>
                 <div className={`text-5xl font-black mb-8 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.price}
-                  <span className={`text-lg ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{plan.priceSuffix}</span>
+                  {formatCurrency(plan.monthlyPriceBrl)}
+                  <span className={`text-lg ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>/mês</span>
                 </div>
                 <ul className="space-y-4 mb-12 flex-1">
                   {plan.features.map((feature) => (
