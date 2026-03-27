@@ -17,26 +17,15 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
-
-const PLAN_DISPLAY_NAMES: Record<string, string> = {
-  basic: 'Básico',
-  medium: 'Intermediário',
-  full: 'Completo',
-};
-
-type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'triennial';
-
-const BILLING_CYCLES: Array<{
-  code: BillingCycle;
-  label: string;
-  months: number;
-  badge?: string;
-}> = [
-  { code: 'yearly', label: 'Anual', months: 12, badge: 'Mais procurado' },
-  { code: 'monthly', label: 'Mensal', months: 1 },
-  { code: 'quarterly', label: 'Trimestral', months: 3 },
-  { code: 'triennial', label: 'Trienal', months: 36 },
-];
+import {
+  BILLING_CYCLE_DEFINITIONS,
+  PLAN_DEFINITIONS,
+  PLAN_DISPLAY_NAMES,
+  getBillingCycleDefinition,
+  getCyclePriceBrl,
+  type BillingCycle,
+  type PlanCode,
+} from '@shared/plans';
 
 declare global {
   interface Window {
@@ -44,74 +33,35 @@ declare global {
   }
 }
 
-const PLANS = [
-  {
-    code: 'basic',
-    audience: 'Pessoa Física',
-    name: 'Plano Básico',
-    monthlyPriceBrl: 29,
-    highlighted: false,
-    dark: false,
-    buttonClassName:
-      'w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all',
-    features: [
-      '1 titular',
-      'Até 1 pessoa cadastrada',
-      'Até 1 CNPJ',
-      'Contas, cartões e transações',
-      'Importação de extratos',
-      'Relatórios essenciais',
-    ],
-  },
-  {
-    code: 'medium',
-    audience: 'Pequeno Negócio',
-    name: 'Plano Intermediário',
-    monthlyPriceBrl: 79,
-    highlighted: true,
-    dark: false,
-    buttonClassName:
-      'w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200',
-    features: [
-      '1 titular',
-      'Até 2 pessoas cadastradas',
-      'Até 2 CNPJs',
-      'Módulo de dívidas',
-      'Conciliação e importação de extratos',
-      'Relatórios avançados e previsão financeira',
-    ],
-  },
-  {
-    code: 'full',
-    audience: 'Operação Estruturada',
-    name: 'Plano Completo',
-    monthlyPriceBrl: 199,
-    highlighted: false,
-    dark: true,
-    buttonClassName:
-      'w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-100 transition-all',
-    features: [
-      '1 titular',
-      'Até 10 pessoas cadastradas',
-      'Até 10 CNPJs',
-      'Tudo do Intermediário',
-      'Suporte prioritário',
-      'Preparado para futuras integrações bancárias',
-    ],
-  },
+const BILLING_CYCLES = [
+  { ...BILLING_CYCLE_DEFINITIONS.yearly, badge: 'Mais procurado' },
+  BILLING_CYCLE_DEFINITIONS.monthly,
+  BILLING_CYCLE_DEFINITIONS.quarterly,
+  BILLING_CYCLE_DEFINITIONS.triennial,
 ] as const;
+
+const PLANS = Object.values(PLAN_DEFINITIONS).map((plan) => ({
+  code: plan.code,
+  audience: plan.audience,
+  name: plan.name,
+  monthlyPriceBrl: plan.monthlyPriceBrl,
+  highlighted: plan.code === 'medium',
+  dark: plan.code === 'full',
+  buttonClassName:
+    plan.code === 'medium'
+      ? 'w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200'
+      : plan.code === 'full'
+        ? 'w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-100 transition-all'
+        : 'w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all',
+  features: plan.marketing.features,
+  badges: plan.marketing.highlights,
+}));
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   }).format(value);
-
-const getBillingCycleDefinition = (billingCycle: BillingCycle) =>
-  BILLING_CYCLES.find((cycle) => cycle.code === billingCycle) || BILLING_CYCLES[0];
-
-const getCyclePrice = (monthlyPriceBrl: number, billingCycle: BillingCycle) =>
-  monthlyPriceBrl * getBillingCycleDefinition(billingCycle).months;
 
 const getCycleSuffix = (billingCycle: BillingCycle) => {
   switch (billingCycle) {
@@ -265,9 +215,9 @@ const SignupModal = ({
 }: {
   isOpen: boolean,
   onClose: () => void,
-  selectedPlan: string | null,
+  selectedPlan: PlanCode | null,
   selectedBillingCycle: BillingCycle,
-  onSelectPlan: (plan: string) => void,
+  onSelectPlan: (plan: PlanCode) => void,
   onSelectBillingCycle: (billingCycle: BillingCycle) => void,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -331,12 +281,25 @@ const SignupModal = ({
                 </span>
                 <h3 className={`text-2xl font-black mb-4 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</h3>
                 <div className={`text-4xl font-black mb-6 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>
-                  {formatCurrency(getCyclePrice(plan.monthlyPriceBrl, selectedBillingCycle))}
+                  {formatCurrency(getCyclePriceBrl(plan.code, selectedBillingCycle))}
                   <span className={`text-base ml-1 ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{getCycleSuffix(selectedBillingCycle)}</span>
                 </div>
                 <p className={`text-xs font-bold mb-6 ${plan.dark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {getBillingCycleDefinition(selectedBillingCycle).label} • equivalente a {formatCurrency(plan.monthlyPriceBrl)}/mês
                 </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {plan.badges.map((badge) => (
+                    <span
+                      key={badge}
+                      className={[
+                        'rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest',
+                        plan.dark ? 'bg-white/10 text-white/80' : 'bg-slate-50 text-slate-500',
+                      ].join(' ')}
+                    >
+                      {badge}
+                    </span>
+                  ))}
+                </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className={`text-sm font-bold ${plan.dark ? 'text-slate-300' : 'text-slate-600'}`}>
@@ -422,7 +385,7 @@ const SignupModal = ({
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Criar sua conta</h2>
             <p className="text-slate-500 font-medium mt-2">Plano selecionado: <span className="text-blue-600 uppercase font-black">{PLAN_DISPLAY_NAMES[selectedPlan] || selectedPlan}</span></p>
             <p className="text-xs text-slate-400 mt-1">
-              Ciclo selecionado: {getBillingCycleDefinition(selectedBillingCycle).label} • {formatCurrency(getCyclePrice((PLANS.find((plan) => plan.code === selectedPlan)?.monthlyPriceBrl) || 0, selectedBillingCycle))}{getCycleSuffix(selectedBillingCycle)}
+              Ciclo selecionado: {getBillingCycleDefinition(selectedBillingCycle).label} • {formatCurrency(getCyclePriceBrl(selectedPlan, selectedBillingCycle))}{getCycleSuffix(selectedBillingCycle)}
             </p>
           </div>
 
@@ -479,10 +442,10 @@ const SignupModal = ({
 
 const LandingPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanCode | null>(null);
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('yearly');
 
-  const openSignup = (plan: string) => {
+  const openSignup = (plan: PlanCode) => {
     setSelectedPlan(plan);
     setModalOpen(true);
   };
