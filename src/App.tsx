@@ -17,15 +17,88 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
-import {
-  BILLING_CYCLE_DEFINITIONS,
-  PLAN_DEFINITIONS,
-  PLAN_DISPLAY_NAMES,
-  getBillingCycleDefinition,
-  getCyclePriceBrl,
-  type BillingCycle,
-  type PlanCode,
-} from '@shared/plans';
+
+// Inlined shared/plans logic for standalone production environment
+type PlanCode = 'basic' | 'medium' | 'full';
+type BillingCycle = 'monthly' | 'quarterly' | 'yearly' | 'triennial';
+
+const PLAN_DISPLAY_NAMES: Record<PlanCode, string> = {
+    basic: 'Básico',
+    medium: 'Intermediário',
+    full: 'Completo',
+};
+
+const BILLING_CYCLE_DEFINITIONS: Record<string, any> = {
+    monthly: { code: 'monthly', label: 'Mensal', months: 1 },
+    quarterly: { code: 'quarterly', label: 'Trimestral', months: 3 },
+    yearly: { code: 'yearly', label: 'Anual', months: 12 },
+    triennial: { code: 'triennial', label: 'Trienal', months: 36 },
+};
+
+const PLAN_DEFINITIONS: Record<string, any> = {
+    basic: {
+        code: 'basic',
+        name: 'Plano Básico',
+        audience: 'Pessoa Física',
+        monthlyPriceBrl: 29,
+        marketing: {
+            highlights: ['Operação essencial', 'Importação de extratos'],
+            features: [
+                '1 titular',
+                'Até 1 pessoa cadastrada',
+                'Até 1 CNPJ',
+                'Contas, cartões e transações',
+                'Importação de extratos',
+                'Relatórios essenciais',
+            ],
+        },
+    },
+    medium: {
+        code: 'medium',
+        name: 'Plano Intermediário',
+        audience: 'Pequeno Negócio',
+        monthlyPriceBrl: 79,
+        marketing: {
+            highlights: ['Dívidas', 'Conciliação bancária', 'Previsão financeira'],
+            features: [
+                '1 titular',
+                'Até 2 pessoas cadastradas',
+                'Até 2 CNPJs',
+                'Módulo de dívidas',
+                'Conciliação bancária',
+                'Relatórios avançados',
+                'Previsão financeira',
+            ],
+        },
+    },
+    full: {
+        code: 'full',
+        name: 'Plano Completo',
+        audience: 'Operação Estruturada',
+        monthlyPriceBrl: 199,
+        marketing: {
+            highlights: ['Suporte prioritário', 'Integrações bancárias futuras'],
+            features: [
+                '1 titular',
+                'Até 10 pessoas cadastradas',
+                'Até 10 CNPJs',
+                'Tudo do Intermediário',
+                'Suporte prioritário',
+                'Integrações bancárias futuras',
+            ],
+        },
+    },
+};
+
+const getBillingCycleDefinition = (billingCycle: string | null) => {
+    return BILLING_CYCLE_DEFINITIONS[billingCycle || 'monthly'] || BILLING_CYCLE_DEFINITIONS.monthly;
+};
+
+const getCyclePriceBrl = (planCode: string, billingCycle: string | null) => {
+    const plan = PLAN_DEFINITIONS[planCode] || PLAN_DEFINITIONS.basic;
+    const cycle = getBillingCycleDefinition(billingCycle);
+    return Number((plan.monthlyPriceBrl * cycle.months).toFixed(2));
+};
 
 declare global {
   interface Window {
@@ -40,8 +113,8 @@ const BILLING_CYCLES = [
   BILLING_CYCLE_DEFINITIONS.triennial,
 ] as const;
 
-const PLANS = Object.values(PLAN_DEFINITIONS).map((plan) => ({
-  code: plan.code,
+const PLANS = Object.values(PLAN_DEFINITIONS).map((plan: any) => ({
+  code: plan.code as PlanCode,
   audience: plan.audience,
   name: plan.name,
   monthlyPriceBrl: plan.monthlyPriceBrl,
@@ -251,7 +324,7 @@ const SignupModal = ({
                 <button
                   key={cycle.code}
                   type="button"
-                  onClick={() => onSelectBillingCycle(cycle.code)}
+                  onClick={() => onSelectBillingCycle(cycle.code as BillingCycle)}
                   className={[
                     'rounded-2xl border px-4 py-3 text-left transition-all',
                     isActive ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
@@ -326,7 +399,7 @@ const SignupModal = ({
     e.preventDefault();
     setLoading(true);
     try {
-      const defaultCompanyName = `Meu Espaço - ${formData.name}`;
+      const defaultCompanyName = `Cliente - ${formData.name}`;
       const defaultSlug = formData.name.toLowerCase().replace(/\s+/g, '-');
 
       const resp = await fetch('/api/rpc/signup_tenant', {
@@ -703,7 +776,7 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {PLANS.map((plan) => (
+            {PLANS.map((plan: any) => (
               <div
                 key={plan.code}
                 className={[
@@ -730,7 +803,7 @@ const LandingPage = () => {
                   <span className={`text-lg ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>/mês</span>
                 </div>
                 <ul className="space-y-4 mb-12 flex-1">
-                  {plan.features.map((feature) => (
+                  {plan.features.map((feature: any) => (
                     <li
                       key={feature}
                       className={`flex items-center gap-3 text-sm font-bold ${plan.dark ? 'text-slate-300' : 'text-slate-600'}`}

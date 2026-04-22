@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  marketing:
+    container_name: onlifin-marketing
+    build: .
+    environment:
+      - PLATFORM_BASE_URL=https://onlifin.onlitec.com.br/app/
+    networks:
+      onlifin-network:
+        aliases:
+          - onlifin-marketing
+      # CORREÇÃO: adicionado proxy_net — padrão correto para Nginx Proxy Manager
+      proxy_net: {}
+    restart: unless-stopped
+    security_opt:
+      - apparmor:unconfined
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  onlifin-network:
+    name: onlifin-network
+    external: true
+  proxy_net:
+    external: true
