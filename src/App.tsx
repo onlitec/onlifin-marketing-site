@@ -122,10 +122,10 @@ const PLANS = Object.values(PLAN_DEFINITIONS).map((plan: any) => ({
   dark: plan.code === 'full',
   buttonClassName:
     plan.code === 'medium'
-      ? 'w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200'
+      ? 'w-full py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200'
       : plan.code === 'full'
-        ? 'w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-100 transition-all'
-        : 'w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all',
+        ? 'w-full py-3 bg-white text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all'
+        : 'w-full py-3 bg-slate-100 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all',
   features: plan.marketing.features,
   badges: plan.marketing.highlights,
 }));
@@ -305,14 +305,15 @@ const SignupModal = ({
   if (!selectedPlan) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-        <div className="bg-white rounded-[2.5rem] w-full max-w-5xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300 p-8 md:p-10">
+        {/* RESPONSIVE_FIX: max-h and overflow-y-auto are CRITICAL to prevent modal from overflowing viewport on mobile/short screens */}
+        <div className="bg-white rounded-[2.5rem] w-full max-w-6xl max-h-[95vh] shadow-2xl overflow-y-auto relative animate-in zoom-in-95 duration-300 p-6 md:p-8">
           <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
             <X size={24} className="text-slate-400" />
           </button>
 
-          <div className="mb-10 text-center">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Escolha seu plano</h2>
-            <p className="text-slate-500 font-medium mt-2">
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Escolha seu plano</h2>
+            <p className="text-slate-500 text-sm font-medium mt-1">
               Selecione a opção mais adequada antes de iniciar seu teste grátis de 30 dias.
             </p>
           </div>
@@ -326,7 +327,7 @@ const SignupModal = ({
                   type="button"
                   onClick={() => onSelectBillingCycle(cycle.code as BillingCycle)}
                   className={[
-                    'rounded-2xl border px-4 py-3 text-left transition-all',
+                    'rounded-xl border px-3 py-2 text-left transition-all',
                     isActive ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
                   ].join(' ')}
                 >
@@ -344,28 +345,28 @@ const SignupModal = ({
               <div
                 key={plan.code}
                 className={[
-                  'rounded-[2rem] border p-8 flex flex-col',
+                  'rounded-[1.5rem] border p-5 flex flex-col',
                   plan.dark ? 'bg-slate-900 text-white' : 'bg-white',
-                  plan.highlighted ? 'border-2 border-blue-600 shadow-2xl shadow-blue-100' : 'border-slate-100 shadow-sm',
+                  plan.highlighted ? 'border-2 border-blue-600 shadow-xl shadow-blue-100' : 'border-slate-100 shadow-sm',
                 ].join(' ')}
               >
                 <span className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.dark ? 'text-blue-400' : plan.highlighted ? 'text-blue-600' : 'text-slate-400'}`}>
                   {plan.audience}
                 </span>
-                <h3 className={`text-2xl font-black mb-4 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</h3>
-                <div className={`text-4xl font-black mb-6 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-xl font-black mb-2 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>{plan.name}</h3>
+                <div className={`text-3xl font-black mb-2 ${plan.dark ? 'text-white' : 'text-slate-900'}`}>
                   {formatCurrency(getCyclePriceBrl(plan.code, selectedBillingCycle))}
-                  <span className={`text-base ml-1 ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{getCycleSuffix(selectedBillingCycle)}</span>
+                  <span className={`text-sm ml-1 ${plan.dark ? 'text-slate-500' : 'text-slate-400'}`}>{getCycleSuffix(selectedBillingCycle)}</span>
                 </div>
-                <p className={`text-xs font-bold mb-6 ${plan.dark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <p className={`text-[10px] font-bold mb-4 ${plan.dark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {getBillingCycleDefinition(selectedBillingCycle).label} • equivalente a {formatCurrency(plan.monthlyPriceBrl)}/mês
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-1 mb-4">
                   {plan.badges.map((badge) => (
                     <span
                       key={badge}
                       className={[
-                        'rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest',
+                        'rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest',
                         plan.dark ? 'bg-white/10 text-white/80' : 'bg-slate-50 text-slate-500',
                       ].join(' ')}
                     >
@@ -373,9 +374,9 @@ const SignupModal = ({
                     </span>
                   ))}
                 </div>
-                <ul className="space-y-3 mb-8 flex-1">
+                <ul className="space-y-1.5 mb-6 flex-1">
                   {plan.features.map((feature) => (
-                    <li key={feature} className={`text-sm font-bold ${plan.dark ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <li key={feature} className={`text-[11px] font-bold ${plan.dark ? 'text-slate-300' : 'text-slate-600'}`}>
                       {feature}
                     </li>
                   ))}
@@ -448,7 +449,8 @@ const SignupModal = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+      {/* RESPONSIVE_FIX: Added max-h and scroll to prevent clipping during signup step */}
+      <div className="bg-white rounded-[2.5rem] w-full max-w-lg max-h-[90vh] shadow-2xl overflow-y-auto relative animate-in zoom-in-95 duration-300">
         <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors">
           <X size={24} className="text-slate-400" />
         </button>
