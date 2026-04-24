@@ -573,24 +573,24 @@ const LandingPage = () => {
               <div className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
                 Gestão Financeira Inteligente
               </div>
-              <h1 className="text-5xl md:text-7xl xl:text-8xl font-black text-slate-900 tracking-tighter leading-none mb-8">
+              <h1 className="text-4xl md:text-5xl xl:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-8">
                 Controle PF e PJ <br />
                 <span className="text-blue-600">sem perder contexto.</span>
               </h1>
-              <p className="max-w-3xl mx-auto xl:mx-0 text-xl text-slate-500 font-medium leading-relaxed mb-8">
+              <p className="max-w-3xl mx-auto xl:mx-0 text-lg text-slate-500 font-medium leading-relaxed mb-10">
                 O OnliFin organiza contas, cartões, transações, contas a pagar e a receber, importação de extratos,
                 conciliação, relatórios e previsão financeira em uma plataforma única para operação pessoal e empresarial.
               </p>
               <div className="flex flex-col sm:flex-row items-center xl:items-start justify-center xl:justify-start gap-4 mb-8">
                 <button
                   onClick={openPlanSelector}
-                  className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:scale-95 flex items-center gap-2"
+                  className="px-7 py-3.5 bg-blue-600 text-white rounded-2xl font-black text-base hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:scale-95 flex items-center gap-2"
                 >
                   Escolher Plano <ArrowRight size={20} />
                 </button>
                 <a
                   href="#features"
-                  className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black text-lg border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
+                  className="px-7 py-3.5 bg-white text-slate-900 rounded-2xl font-black text-base border border-slate-200 hover:border-slate-300 transition-all shadow-sm"
                 >
                   Ver funcionalidades
                 </a>
