@@ -158,6 +158,141 @@ export const Features = () => (
   </section>
 );
 
+const MGFF_DIMENSIONS = [
+  {
+    term: 'Custódia',
+    text: 'De qual conta o dinheiro saiu, pessoal ou da empresa. Vem direto da conta ou do cartão de origem.',
+  },
+  {
+    term: 'Propriedade econômica',
+    text: 'A quem o gasto pertence de fato. A IA infere pela descrição do extrato, pelo seu histórico e pelas regras que você já corrigiu.',
+  },
+] as const;
+
+/** Illustrative only: fictitious figures, labelled as such on the page. */
+const BOUNDARY_EXAMPLE = [
+  { what: 'Software da empresa, pago na conta pessoal', paid: 'PF', owner: 'PJ', delta: '+ R$ 480,00' },
+  { what: 'Mensalidade pessoal, paga na conta da empresa', paid: 'PJ', owner: 'PF', delta: '− R$ 150,00' },
+  { what: 'Fornecedor da empresa, pago na conta da empresa', paid: 'PJ', owner: 'PJ', delta: 'não cruza' },
+] as const;
+
+const MMF_PHASES = [
+  {
+    title: 'Acolhimento',
+    description: 'Misturar contas no começo é normal. O acompanhamento é passivo: você vê o saldo de fronteira, sem sermão.',
+  },
+  {
+    title: 'Estabilização',
+    description: 'A mistura cai. O foco passa para conformidade e rotina, como manter um pró-labore fixo.',
+  },
+  {
+    title: 'Fronteira zero',
+    description: 'Contas separadas. Você escolhe o mentor da fase: Seu Arthur, com foco em conformidade, ou Dona Helena, com foco estratégico.',
+  },
+] as const;
+
+/** The method behind the PF/PJ boundary: MGFF (ledger) and MMF (maturity). Desk ground, ledger rows, no cards. */
+export const Metodo = () => (
+  <section id="metodo" className="bg-desk">
+    <div className={`${container} py-24 lg:py-36`}>
+      <Reveal>
+        <h2 className={`${h2} max-w-[18ch] text-white`}>O método por trás da fronteira PF/PJ.</h2>
+        <p className="mt-6 max-w-[38rem] text-lg leading-relaxed text-dim">
+          Despesa da empresa que sai da conta pessoal do sócio, e o contrário, acontece. Em vez de esconder esse
+          cruzamento, o OnliFin registra, mostra quanto já passou de um lado para o outro e acompanha o quanto você
+          evolui em separá-los. Disponível nas empresas cadastradas.
+        </p>
+      </Reveal>
+
+      <div className="mt-20 grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-10">
+        <Reveal className="lg:col-span-5">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-vermilion-light">MGFF</p>
+          <h3 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
+            Método de Gestão de Fronteiras Financeiras
+          </h3>
+          <dl className="mt-8 border-t border-desk-line">
+            {MGFF_DIMENSIONS.map((d) => (
+              <div key={d.term} className="border-b border-desk-line py-5">
+                <dt className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-white">{d.term}</dt>
+                <dd className="mt-2 max-w-[30rem] text-[1.0625rem] leading-relaxed text-dim">{d.text}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 max-w-[30rem] text-[1.0625rem] leading-relaxed text-dim">
+            Quando as duas divergem, a transação é de fronteira. Se a confiança da IA é baixa ou o valor é alto, ela
+            fica pendente para você confirmar, e cada correção sua vira uma regra para as próximas.
+          </p>
+        </Reveal>
+
+        <Reveal delay={100} className="lg:col-span-7">
+          <div className="border-t-2 border-white">
+            <p className="flex items-baseline justify-between gap-4 py-3 font-mono text-xs uppercase tracking-[0.12em] text-dim">
+              <span>Saldo de fronteira</span>
+              <span>Exemplo ilustrativo, valores fictícios</span>
+            </p>
+            <ul className="border-t border-dashed border-dim/60">
+              {BOUNDARY_EXAMPLE.map((row) => (
+                <li
+                  key={row.what}
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1 border-b border-desk-line py-4"
+                >
+                  <span className="text-[1.0625rem] leading-snug text-white">{row.what}</span>
+                  <span className={`num whitespace-nowrap text-right text-base font-bold ${row.delta.startsWith('−') ? 'text-vermilion-light' : row.delta.startsWith('+') ? 'text-white' : 'text-dim'}`}>
+                    {row.delta}
+                  </span>
+                  <span className="col-span-2 font-mono text-xs uppercase tracking-[0.1em] text-dim">
+                    Saiu da conta {row.paid} · Pertence à {row.owner}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="flex items-baseline justify-between gap-4 border-t-2 border-white pt-4">
+              <span className="font-mono text-sm font-bold uppercase tracking-[0.1em] text-white">= Saldo de fronteira</span>
+              <span className="num whitespace-nowrap text-xl font-bold text-white sm:text-3xl">+ R$ 330,00</span>
+            </p>
+            <p className="mt-4 max-w-[34rem] text-[0.9375rem] leading-relaxed text-dim">
+              Positivo: a pessoa física emprestou, no líquido, para a empresa. Negativo: a empresa emprestou para a
+              pessoa física.
+            </p>
+          </div>
+        </Reveal>
+      </div>
+
+      <div className="mt-24 grid grid-cols-1 gap-14 border-t border-desk-line pt-16 lg:grid-cols-12 lg:gap-10">
+        <Reveal className="lg:col-span-5">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-vermilion-light">MMF</p>
+          <h3 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
+            Modelo de Maturidade de Fronteira
+          </h3>
+          <p className="mt-6 max-w-[30rem] text-[1.0625rem] leading-relaxed text-dim">
+            A taxa de mistura mede quantas transações cruzam a fronteira sobre o total, numa janela móvel de 90 dias.
+            Ela mostra em que fase a empresa está, e o assistente ajusta o tom da conversa a essa fase.
+          </p>
+          <p className="mt-4 max-w-[30rem] text-[1.0625rem] leading-relaxed text-white">
+            Você decide quando avançar: a mudança de fase nunca é automática.
+          </p>
+        </Reveal>
+        <ol className="border-t border-desk-line lg:col-span-7">
+          {MMF_PHASES.map((phase, index) => (
+            <Reveal
+              as="li"
+              key={phase.title}
+              delay={index * 60}
+              className={`grid grid-cols-[3.25rem_minmax(0,1fr)] gap-x-4 border-b py-8 sm:grid-cols-[4.5rem_minmax(0,1fr)] ${index === 2 ? 'border-dashed border-dim/60' : 'border-desk-line'}`}
+            >
+              <span className="num pt-2 text-sm font-bold text-vermilion-light">0{index + 1}</span>
+              <div>
+                <h4 className="font-display text-3xl font-extrabold uppercase leading-[1.08] text-white sm:text-4xl">{phase.title}</h4>
+                <p className="mt-3 max-w-[34rem] text-[1.0625rem] leading-relaxed text-dim">{phase.description}</p>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+);
+
 const CONTEXT_LINES = {
   PF: ['Membros da família', 'Contatos financeiros', 'Contas, cartões e transações'],
   PJ: ['Múltiplos CNPJs', 'Contas a pagar e a receber', 'Contexto separado por empresa'],
@@ -165,7 +300,7 @@ const CONTEXT_LINES = {
 
 /** The differentiator: one system, contexts kept apart. Two columns, subtotalled. */
 export const Contexts = () => (
-  <section className="bg-desk">
+  <section className="border-t border-desk-line bg-desk">
     <div className={`${container} py-24 lg:py-36`}>
       <Reveal>
         <h2 className={`${h2} max-w-[18ch] text-white`}>PF e PJ no mesmo ecossistema.</h2>

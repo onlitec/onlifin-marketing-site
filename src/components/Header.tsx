@@ -5,6 +5,7 @@ import { getPlatformBaseUrl } from '../lib/platform';
 
 const LINKS = [
   { href: '#features', label: 'Funcionalidades' },
+  { href: '#metodo', label: 'Método' },
   { href: '#operation', label: 'Como funciona' },
   { href: '#pricing', label: 'Planos' },
   { href: '#about', label: 'Sobre' },

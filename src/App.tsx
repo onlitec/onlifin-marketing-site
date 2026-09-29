@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
-import { About, Closing, Contexts, Features, Manifesto, Pricing, Steps } from './components/Sections';
+import { About, Closing, Contexts, Features, Manifesto, Metodo, Pricing, Steps } from './components/Sections';
 import { Footer } from './components/Footer';
 import { SignupModal } from './components/SignupModal';
 import type { BillingCycle, PlanCode } from './lib/plans';
@@ -39,6 +39,7 @@ const LandingPage = () => {
         <Manifesto />
         <Steps />
         <Features />
+        <Metodo />
         <Contexts />
         <Pricing onSelectPlan={openSignup} />
         <About />
