@@ -7,24 +7,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
-        },
+        // Graphite desk, cold-white tape paper, two ribbon inks (black + vermilion).
+        desk: { DEFAULT: '#131518', raised: '#1c1f23', line: '#2c3035' },
+        paper: { DEFAULT: '#f3f5f4', shade: '#e3e7e5', line: '#c9cfcc' },
+        ink: { DEFAULT: '#15171a', mute: '#525960' },
+        dim: '#a4abb2',
+        vermilion: { DEFAULT: '#c22d14', light: '#ff6b4e' },
+      },
+      fontFamily: {
+        display: ['"Big Shoulders Display"', '"Arial Narrow"', 'sans-serif'],
+        text: ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
+        mono: ['"Martian Mono"', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
-        '2xl': '1rem',
-        '3xl': '1.5rem',
-        '4xl': '2rem',
+        none: '0',
+        DEFAULT: '2px',
       },
     },
   },

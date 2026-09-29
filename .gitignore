@@ -1,0 +1,12 @@
+node_modules
+dist
+.impeccable/review
+.impeccable/build
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+*.bak*
+*.orig*
+.env
+.env.*
+*.log
+.DS_Store

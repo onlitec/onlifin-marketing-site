@@ -1,0 +1,7 @@
+.git
+node_modules
+dist
+.impeccable
+*.bak*
+*.orig*
+README.md
