@@ -3,29 +3,106 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --desk: #131518;
+  --paper: #f3f5f4;
+  --ink: #15171a;
+  --red: #c22d14;
+  --red-light: #ff6b4e;
+  --focus: #ff6b4e;
+  color-scheme: dark;
+}
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #ffffff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  background: var(--desk);
 }
 
 body {
   margin: 0;
-  display: flex;
   min-width: 320px;
-  min-height: 100vh;
-  color: #0f172a;
-  background: #ffffff;
+  background: var(--desk);
+  color: #eceeed;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
 }
 
-#root {
-  width: 100%;
+#root { width: 100%; }
+
+::selection { background: var(--red-light); color: #131518; }
+
+/* Focus is themed per ground: light ring on desk, ink ring on paper. */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.on-paper { --focus: #15171a; }
+.on-paper ::selection { background: var(--red); color: #fff; }
+
+/* Tape numerals: tabular so digits settle without shifting layout. */
+.num { font-family: 'Martian Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* Serrated tape edges (mask, no images). */
+.tape-serrate-b {
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 7px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 7px repeat-x;
+}
+.tape-serrate-t {
+  -webkit-mask:
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 14px 7px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 14px 7px repeat-x;
+}
+
+/* Voided tape line: a ribbon-red strike through the cap height; survives line wraps. */
+.void {
+  background: linear-gradient(var(--red), var(--red)) no-repeat 0 46% / 100% 0.075em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Double rule: the tape's "total" underline. */
+.rule-total { border-bottom: 4px double currentColor; }
+
+/* Motion: paper feeds out of the slot, sections rise once. */
+@keyframes feed {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(-6px); }
+  to   { clip-path: inset(0 0 0 0);    transform: translateY(0); }
+}
+.feed {
+  animation: feed 380ms steps(9, end) both;
+  animation-delay: calc(var(--i, 0) * 430ms + 350ms);
+}
+
+/* The tape waits, hidden, until it is on screen. */
+.tape-idle .feed { animation-play-state: paused; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal.is-pending { opacity: 0; }
+.reveal.is-in { animation: rise 640ms cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: var(--d, 0ms); }
+
+/* Overlay + modal entrance */
+@keyframes settle-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-in { animation: settle-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Reduced motion keeps state (everything visible) and drops movement. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .feed, .modal-in { animation: none; }
+  .reveal.is-pending { opacity: 1; }
+  .reveal.is-in { animation: none; }
+  * { transition-duration: 0.01ms !important; }
 }

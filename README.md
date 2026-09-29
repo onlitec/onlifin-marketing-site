@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# OnliFin — site de marketing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Landing page pública do OnliFin (React 18 + TypeScript + Vite + Tailwind 3), servida por Nginx.
+Apresenta o produto, os planos e leva ao cadastro no app (`/app/`).
 
-Currently, two official plugins are available:
+## Identidade visual
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Direção "bobina de somadora": mesa grafite, fita de papel impressa em tinta preta e vermelhão, títulos em
+Big Shoulders Display, dados em Martian Mono e texto em Hanken Grotesk. Sem cards, gradientes ou sombras.
 
-## React Compiler
+- Produto e restrições de conteúdo: [`PRODUCT.md`](PRODUCT.md)
+- Sistema de design (tokens, componentes, regras): [`DESIGN.md`](DESIGN.md) e `.impeccable/design.json`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Favicon
 
-## Expanding the ESLint configuration
+`public/favicon.svg` (marca das duas barras, coral sobre o grafite da mesa), `favicon.ico` (16/32/48) e
+`apple-touch-icon.png` (180). A geometria é múltipla de 4 para as barras ficarem nítidas em 16, 32 e 48 px.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Estrutura
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/App.tsx              composição da página
+src/components/          Header, Hero (a fita), Sections, Footer, SignupModal, Tape (primitivos de movimento)
+src/lib/plans.ts         planos, preços e ciclos (fonte única de preços desta página)
+src/lib/platform.ts      URL da plataforma (runtime-config.js > VITE_PLATFORM_BASE_URL > origin)
+nginx-marketing.conf     roteamento: /api, /app, redirects /login /pf /pj, rate limit
+Dockerfile               build Vite + Nginx; gera runtime-config.js no start
+docker-compose.yml       compose de produção (redes onlifin-network e proxy_net)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Desenvolvimento
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install --legacy-peer-deps
+npm run dev        # http://localhost:5173
+npm run build      # gera dist/
+npm run lint
 ```
+
+## Configuração
+
+`PLATFORM_BASE_URL` (variável de ambiente do container) define para onde vão "Acessar plataforma" e o
+redirecionamento pós-cadastro. Ela é lida **na subida do container** (`/docker-entrypoint.d/40-write-runtime-config.sh`
+grava `runtime-config.js`), então a mesma imagem serve dev e produção. Padrão de produção: `https://onlifin.com.br/app/`.
+
+## Cadastro
+
+O modal chama `POST /api/rpc/signup_tenant` e `POST /api/rpc/login` (proxy do Nginx para a API) e redireciona para
+`{PLATFORM_BASE_URL}/login?signup=1&plan=...&billingCycle=...`. O contrato dessas chamadas não deve mudar sem
+alinhar com o backend.
+
+## Build da imagem e deploy
+
+O `Dockerfile` usa `COPY <<'EOF'` e por isso **exige BuildKit** (`docker buildx`). Servidores sem `buildx` não
+constroem a imagem: construa em outra máquina e envie com `docker save | gzip | ssh ... 'gunzip | docker load'`.
+
+```bash
+docker compose build marketing
+docker compose up -d --no-deps marketing
+```
+
+O workflow `Deploy Marketing Site` constrói e envia a imagem ao Docker Hub em push para `main`
+(não faz deploy no servidor). Reversão em produção: retague a imagem anterior como `latest` e recrie o container.
+
+## Pendências conhecidas
+
+- `framer-motion` está declarado e não é usado.
+- `tsconfig.app.json` usa `target ES2023`, que o TypeScript `~5.4` não aceita; o `vite build` não é afetado.
+- Fontes carregadas do Google Fonts (considerar hospedar localmente).
