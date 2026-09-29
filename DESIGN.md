@@ -214,7 +214,7 @@ A paper sheet on the 90% desk scrim, square, up to `max-w-6xl` (plans) or `max-w
 
 - `framer-motion` is in `package.json` and imported nowhere in `src`; motion is hand-written CSS plus `IntersectionObserver`.
 - `tsconfig.app.json` targets `ES2023`, which the installed TypeScript (`~5.4.5`) does not accept.
-- `public/favicon.svg` is still the template Vite mark in purple/blue, not the OnliFin wordmark bars.
+- Favicon set (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) uses the wordmark's two bars in vermilion-light on the desk ground; there is no web manifest or maskable icon yet.
 - Fonts load from Google Fonts (third-party CDN) in `index.html`, not self-hosted.
 - A third-party JivoChat widget (`code.jivosite.com`) floats at the bottom right and carries its own styling outside this system.
 - `desk-raised` and `paper-line` are declared in the Tailwind config and unused in components.

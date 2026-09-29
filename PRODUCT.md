@@ -36,7 +36,7 @@ Confirmed by current copy and plan definitions (do not extend):
 - Signup flow and its API contract must be preserved exactly.
 
 ## Brand Commitments
-Name is written OnliFin (Onli + Fin). Language: Brazilian Portuguese. Existing tone is direct and operational. No other brand assets confirmed (a favicon.svg exists in `public/`).
+Name is written OnliFin (Onli + Fin). Language: Brazilian Portuguese. Existing tone is direct and operational. No other brand assets confirmed (favicon set in `public/`: the wordmark's two bars on the desk ground).
 
 ## Evidence on Hand
 No testimonials, customer logos, usage metrics, press, or case studies exist. Future work must not fabricate any. Real evidence available is only the product's own capabilities and plan facts above. The user indicated there may be further facts to provide; none were specified yet (open).

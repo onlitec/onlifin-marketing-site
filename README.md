@@ -11,6 +11,11 @@ Big Shoulders Display, dados em Martian Mono e texto em Hanken Grotesk. Sem card
 - Produto e restrições de conteúdo: [`PRODUCT.md`](PRODUCT.md)
 - Sistema de design (tokens, componentes, regras): [`DESIGN.md`](DESIGN.md) e `.impeccable/design.json`
 
+## Favicon
+
+`public/favicon.svg` (marca das duas barras, coral sobre o grafite da mesa), `favicon.ico` (16/32/48) e
+`apple-touch-icon.png` (180). A geometria é múltipla de 4 para as barras ficarem nítidas em 16, 32 e 48 px.
+
 ## Estrutura
 
 ```
@@ -59,7 +64,6 @@ O workflow `Deploy Marketing Site` constrói e envia a imagem ao Docker Hub em p
 
 ## Pendências conhecidas
 
-- `favicon.svg` ainda é o do template Vite (falta a marca OnliFin).
 - `framer-motion` está declarado e não é usado.
 - `tsconfig.app.json` usa `target ES2023`, que o TypeScript `~5.4` não aceita; o `vite build` não é afetado.
 - Fontes carregadas do Google Fonts (considerar hospedar localmente).
