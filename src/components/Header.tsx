@@ -5,24 +5,25 @@ import { getPlatformBaseUrl } from '../lib/platform';
 
 const LINKS = [
   { href: '#features', label: 'Funcionalidades' },
-  { href: '#metodo', label: 'Método' },
+  { href: '/metodo', label: 'Método' },
   { href: '#operation', label: 'Como funciona' },
   { href: '#pricing', label: 'Planos' },
   { href: '#about', label: 'Sobre' },
 ];
 
-export const Header = ({ onStart }: { onStart: () => void }) => {
+export const Header = ({ onStart, home = true }: { onStart: () => void; home?: boolean }) => {
   const [open, setOpen] = useState(false);
+  const links = LINKS.map((l) => (!home && l.href.startsWith('#') ? { ...l, href: `/${l.href}` } : l));
 
   return (
     <header className="sticky top-0 z-50 border-b border-desk-line bg-desk">
       <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4 px-5 sm:px-8">
-        <a href="#top" aria-label="OnliFin, início" className="text-white">
+        <a href={home ? '#top' : '/'} aria-label="OnliFin, início" className="text-white">
           <Wordmark />
         </a>
 
         <nav aria-label="Principal" className="hidden items-center gap-9 lg:flex">
-          {LINKS.map((link) => (
+          {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -63,7 +64,7 @@ export const Header = ({ onStart }: { onStart: () => void }) => {
       {open && (
         <nav id="mobile-nav" aria-label="Principal" className="border-t border-desk-line bg-desk lg:hidden">
           <ul className="mx-auto max-w-[1320px] px-5 py-2 sm:px-8">
-            {[...LINKS, { href: `${getPlatformBaseUrl()}/pf`, label: 'Acessar plataforma' }].map((link) => (
+            {[...links, { href: `${getPlatformBaseUrl()}/pf`, label: 'Acessar plataforma' }].map((link) => (
               <li key={link.label} className="border-b border-desk-line last:border-b-0">
                 <a
                   href={link.href}

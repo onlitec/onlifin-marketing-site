@@ -1,10 +1,12 @@
-import { useCallback, useState } from 'react';
+import { lazy, Suspense, useCallback, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { About, Closing, Contexts, Features, Manifesto, Metodo, Pricing, Steps } from './components/Sections';
 import { Footer } from './components/Footer';
 import { SignupModal } from './components/SignupModal';
 import type { BillingCycle, PlanCode } from './lib/plans';
+
+const MetodoPage = lazy(() => import('./pages/Metodo'));
 
 const LandingPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -50,4 +52,16 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+const App = () => {
+  const path = window.location.pathname.replace(/\/+$/, '');
+  if (path === '/metodo') {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-desk" />}>
+        <MetodoPage />
+      </Suspense>
+    );
+  }
+  return <LandingPage />;
+};
+
+export default App;

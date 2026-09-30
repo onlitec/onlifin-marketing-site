@@ -206,9 +206,8 @@ export const Metodo = () => (
 
       <div className="mt-20 grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-10">
         <Reveal className="lg:col-span-5">
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-vermilion-light">MGFF</p>
-          <h3 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
-            Método de Gestão de Fronteiras Financeiras
+          <h3 className="font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
+            Método de Gestão de Fronteiras Financeiras (MGFF)
           </h3>
           <dl className="mt-8 border-t border-desk-line">
             {MGFF_DIMENSIONS.map((d) => (
@@ -260,9 +259,8 @@ export const Metodo = () => (
 
       <div className="mt-24 grid grid-cols-1 gap-14 border-t border-desk-line pt-16 lg:grid-cols-12 lg:gap-10">
         <Reveal className="lg:col-span-5">
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-vermilion-light">MMF</p>
-          <h3 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
-            Modelo de Maturidade de Fronteira
+          <h3 className="font-display text-4xl font-extrabold uppercase leading-[1.08] text-white sm:text-5xl">
+            Modelo de Maturidade de Fronteira (MMF)
           </h3>
           <p className="mt-6 max-w-[30rem] text-[1.0625rem] leading-relaxed text-dim">
             A taxa de mistura mede quantas transações cruzam a fronteira sobre o total, numa janela móvel de 90 dias.
@@ -271,6 +269,13 @@ export const Metodo = () => (
           <p className="mt-4 max-w-[30rem] text-[1.0625rem] leading-relaxed text-white">
             Você decide quando avançar: a mudança de fase nunca é automática.
           </p>
+          <a
+            href="/metodo"
+            className="group mt-8 inline-flex min-h-[52px] items-center gap-3 border-2 border-white px-5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white hover:text-ink"
+          >
+            Ver o método completo
+            <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+          </a>
         </Reveal>
         <ol className="border-t border-desk-line lg:col-span-7">
           {MMF_PHASES.map((phase, index) => (
