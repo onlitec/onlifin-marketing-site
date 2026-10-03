@@ -1,9 +1,31 @@
 import { ArrowRight } from 'lucide-react';
 import { Reveal } from './Tape';
-import { PLANS, formatCurrency, type PlanCode } from '../lib/plans';
+import {
+  BILLING_CYCLES,
+  PLANS,
+  formatCurrency,
+  getBillingCycleDefinition,
+  getCyclePriceBrl,
+  getCycleSuffix,
+  type BillingCycle,
+  type PlanCode,
+} from '../lib/plans';
 
 const container = 'mx-auto max-w-[1320px] px-5 sm:px-8';
 const h2 = 'font-display text-[2.75rem] font-black uppercase leading-[1.08] sm:text-[3.75rem] lg:text-[4.5rem]';
+
+/** Quiet text CTA that closes a section and points to the plans. */
+const PlansLink = ({ tone }: { tone: 'paper' | 'desk' }) => (
+  <a
+    href="#pricing"
+    className={`group mt-12 inline-flex min-h-[44px] items-center gap-3 font-mono text-sm font-bold uppercase tracking-[0.12em] underline decoration-2 underline-offset-[8px] ${
+      tone === 'paper' ? 'text-ink decoration-ink/40 hover:decoration-ink' : 'text-white decoration-dim/50 hover:decoration-white'
+    }`}
+  >
+    Ver planos
+    <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+  </a>
+);
 
 /* ---------- Content (copy preserved from the previous site) ---------- */
 
@@ -78,7 +100,7 @@ const DIFFERENTIALS = [
 export const Manifesto = () => (
   <section className="relative on-paper bg-paper text-ink">
       <div aria-hidden="true" className="tape-serrate-b absolute -bottom-[6px] left-0 right-0 z-10 h-[14px] bg-paper" />
-    <div className={`${container} py-24 lg:py-36`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
         <Reveal className="lg:col-span-8">
           <h2 className="font-display text-[3rem] font-black uppercase leading-[1.08] sm:text-[4.25rem] lg:text-[5rem]">
@@ -101,7 +123,7 @@ export const Manifesto = () => (
 
 export const Steps = () => (
   <section id="operation" className="bg-desk">
-    <div className={`${container} py-24 lg:py-36`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">
@@ -134,7 +156,7 @@ export const Steps = () => (
 export const Features = () => (
   <section id="features" className="relative on-paper bg-paper text-ink">
       <div aria-hidden="true" className="tape-serrate-b absolute -bottom-[6px] left-0 right-0 z-10 h-[14px] bg-paper" />
-    <div className={`${container} py-24 lg:py-36`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <Reveal>
         <h2 className={`${h2} max-w-[16ch]`}>O que o OnliFin já entrega.</h2>
       </Reveal>
@@ -154,6 +176,7 @@ export const Features = () => (
           ))}
         </ol>
       </div>
+      <PlansLink tone="paper" />
     </div>
   </section>
 );
@@ -194,7 +217,7 @@ const MMF_PHASES = [
 /** The method behind the PF/PJ boundary: MGFF (ledger) and MMF (maturity). Desk ground, ledger rows, no cards. */
 export const Metodo = () => (
   <section id="metodo" className="bg-desk">
-    <div className={`${container} py-24 lg:py-36`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <Reveal>
         <h2 className={`${h2} max-w-[18ch] text-white`}>O método por trás da fronteira PF/PJ.</h2>
         <p className="mt-6 max-w-[38rem] text-lg leading-relaxed text-dim">
@@ -305,8 +328,8 @@ const CONTEXT_LINES = {
 
 /** The differentiator: one system, contexts kept apart. Two columns, subtotalled. */
 export const Contexts = () => (
-  <section className="border-t border-desk-line bg-desk">
-    <div className={`${container} py-24 lg:py-36`}>
+  <section className="bg-desk">
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <Reveal>
         <h2 className={`${h2} max-w-[18ch] text-white`}>PF e PJ no mesmo ecossistema.</h2>
         <p className="mt-6 max-w-[36rem] text-lg leading-relaxed text-dim">
@@ -340,14 +363,23 @@ export const Contexts = () => (
           ))}
         </ul>
       </div>
+      <PlansLink tone="desk" />
     </div>
   </section>
 );
 
-export const Pricing = ({ onSelectPlan }: { onSelectPlan: (plan: PlanCode) => void }) => (
+export const Pricing = ({
+  onSelectPlan,
+  billingCycle,
+  onSelectBillingCycle,
+}: {
+  onSelectPlan: (plan: PlanCode) => void;
+  billingCycle: BillingCycle;
+  onSelectBillingCycle: (cycle: BillingCycle) => void;
+}) => (
   <section id="pricing" className="relative on-paper bg-paper text-ink">
       <div aria-hidden="true" className="tape-serrate-b absolute -bottom-[6px] left-0 right-0 z-10 h-[14px] bg-paper" />
-    <div className={`${container} py-24 lg:py-36`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <Reveal className="max-w-[40rem]">
         <h2 className={h2}>Planos que acompanham você.</h2>
         <p className="mt-6 text-lg leading-relaxed text-ink-mute">
@@ -356,18 +388,41 @@ export const Pricing = ({ onSelectPlan }: { onSelectPlan: (plan: PlanCode) => vo
         </p>
       </Reveal>
 
-      <div className="mt-16 grid grid-cols-1 gap-y-14 lg:grid-cols-3 lg:gap-y-0 lg:divide-x lg:divide-ink/25">
+      <div role="group" aria-label="Ciclo de cobrança" className="mt-12 grid grid-cols-2 border-y-2 border-ink sm:grid-cols-4">
+        {BILLING_CYCLES.map((cycle) => {
+          const active = billingCycle === cycle.code;
+          return (
+            <button
+              key={cycle.code}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onSelectBillingCycle(cycle.code as BillingCycle)}
+              className={`min-h-[52px] px-3 font-mono text-xs font-bold uppercase tracking-[0.1em] transition-colors ${
+                active ? 'bg-ink text-paper' : 'text-ink hover:bg-paper-shade'
+              }`}
+            >
+              {cycle.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-12 grid grid-cols-1 gap-y-14 lg:grid-cols-3 lg:gap-y-0 lg:divide-x lg:divide-ink/25">
         {PLANS.map((plan, i) => (
-          <Reveal key={plan.code} delay={i * 70} className="flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0">
+          <Reveal key={plan.code} delay={i * 70} className={`flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0 ${plan.highlighted ? 'max-lg:order-first' : ''}`}>
             <div className={`border-t-4 pt-4 ${plan.highlighted ? 'border-vermilion' : 'border-ink'}`}>
               <h3 className="font-display text-4xl font-extrabold uppercase leading-[1.05]">{plan.name}</h3>
               <p className="mt-2 text-base text-ink-mute">
                 {plan.audience}
                 {plan.highlighted && <span className="font-bold text-vermilion"> · Recomendado</span>}
               </p>
-              <p className="num mt-8 text-[2.75rem] font-bold leading-none tracking-tight lg:text-[2.4rem] xl:text-[3.25rem]">
+              <p className="num mt-8 text-[2.25rem] font-bold leading-none tracking-tight min-[400px]:text-[2.75rem] lg:text-[2.4rem] xl:text-[3.25rem]">
                 {formatCurrency(plan.monthlyPriceBrl)}
                 <span className="ml-1 text-base font-medium text-ink-mute">/mês</span>
+              </p>
+              <p className="num mt-3 text-sm text-ink-mute">
+                {getBillingCycleDefinition(billingCycle).label} · {formatCurrency(getCyclePriceBrl(plan.code, billingCycle))}
+                {getCycleSuffix(billingCycle)}
               </p>
             </div>
             <ul className="mt-8 flex-1 divide-y divide-ink/15 border-y border-ink/15">
@@ -399,8 +454,8 @@ export const Pricing = ({ onSelectPlan }: { onSelectPlan: (plan: PlanCode) => vo
 );
 
 export const About = () => (
-  <section id="about" className="bg-desk">
-    <div className={`${container} py-24 lg:py-36`}>
+  <section id="about" className="border-t border-desk-line bg-desk">
+    <div className={`${container} py-16 sm:py-24 lg:py-36`}>
       <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-10">
         <Reveal className="lg:col-span-7">
           <h2 className={`${h2} text-white`}>Uma base financeira única para quem precisa operar e evoluir.</h2>
@@ -429,7 +484,7 @@ export const About = () => (
 /** Closing line of the tape: the total, and the one action. */
 export const Closing = ({ onStart }: { onStart: () => void }) => (
   <section className="on-paper bg-paper text-ink">
-    <div className={`${container} py-24 lg:py-32`}>
+    <div className={`${container} py-16 sm:py-24 lg:py-32`}>
       <Reveal>
         <div className="border-t-2 border-ink pt-8">
           <h2 className="rule-total inline-block text-balance font-display text-[3.25rem] font-black uppercase leading-[1.08] sm:text-[5rem] lg:text-[6rem]">

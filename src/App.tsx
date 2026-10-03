@@ -36,14 +36,18 @@ const LandingPage = () => {
         onSelectBillingCycle={setSelectedBillingCycle}
       />
       <Header onStart={openPlanSelector} />
-      <main>
+      <main id="main">
         <Hero onStart={openPlanSelector} />
         <Manifesto />
         <Steps />
         <Features />
-        <Metodo />
         <Contexts />
-        <Pricing onSelectPlan={openSignup} />
+        <Pricing
+          onSelectPlan={openSignup}
+          billingCycle={selectedBillingCycle}
+          onSelectBillingCycle={setSelectedBillingCycle}
+        />
+        <Metodo />
         <About />
         <Closing onStart={openPlanSelector} />
       </main>

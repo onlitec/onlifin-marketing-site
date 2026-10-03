@@ -212,9 +212,8 @@ A paper sheet on the 90% desk scrim, square, up to `max-w-6xl` (plans) or `max-w
 
 ## Known drift (recorded, not canonized)
 
-- `framer-motion` is in `package.json` and imported nowhere in `src`; motion is hand-written CSS plus `IntersectionObserver`.
 - `tsconfig.app.json` targets `ES2023`, which the installed TypeScript (`~5.4.5`) does not accept.
 - Favicon set (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) uses the wordmark's two bars in vermilion-light on the desk ground; there is no web manifest or maskable icon yet.
-- Fonts load from Google Fonts (third-party CDN) in `index.html`, not self-hosted.
-- A third-party JivoChat widget (`code.jivosite.com`) floats at the bottom right and carries its own styling outside this system.
+- Fonts are self-hosted in `public/fonts` (latin subset woff2, `@font-face` in `src/index.css`); motion is hand-written CSS plus `IntersectionObserver`.
+- A third-party JivoChat widget (`code.jivosite.com`, loaded after `load`) floats at the bottom right and carries its own styling outside this system.
 - `desk-raised` and `paper-line` are declared in the Tailwind config and unused in components.

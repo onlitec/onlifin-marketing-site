@@ -11,13 +11,13 @@ npm run build      # vite build -> dist/ (no tsc step)
 npm run lint       # eslint .
 ```
 
-There is no test suite. `tsconfig.app.json` targets ES2023, which TypeScript `~5.4` rejects, so don't rely on `tsc` for type checking; `vite build` is unaffected.
+`npm run lint` currently crashes (react-hooks plugin vs ESLint 9.39). There is no test suite. `tsconfig.app.json` targets ES2023, which TypeScript `~5.4` rejects, so don't rely on `tsc` for type checking; `vite build` is unaffected.
 
 Docker: `docker compose build marketing && docker compose up -d --no-deps marketing`. The Dockerfile uses `COPY <<'EOF'` and therefore needs BuildKit (`docker buildx`); on hosts without it, build elsewhere and ship with `docker save | gzip | ssh ... 'gunzip | docker load'`. The `Deploy Marketing Site` workflow only builds and pushes the image to Docker Hub on push to `main`; it does not deploy to the server.
 
 ## Architecture
 
-Single-page Brazilian-Portuguese marketing site for OnliFin (React 18 + TS + Vite + Tailwind 3), served by Nginx. `src/App.tsx` composes `src/components/*` (Header, Hero, Sections, Footer, SignupModal, Tape); `src/pages/Metodo.tsx` is the `/metodo` page. Note that `framer-motion` is declared but unused.
+Single-page Brazilian-Portuguese marketing site for OnliFin (React 18 + TS + Vite + Tailwind 3), served by Nginx. `src/App.tsx` composes `src/components/*` (Header, Hero, Sections, Footer, SignupModal, Tape); `src/pages/Metodo.tsx` is the `/metodo` page. Sections alternate desk/paper (a paper section before a desk one carries the torn edge), so reordering sections in `App.tsx` means checking that alternation.
 
 Things that span multiple files:
 
@@ -31,5 +31,5 @@ Read `PRODUCT.md` (content rules) and `DESIGN.md` plus `.impeccable/design.json`
 
 - Say only what the product does today. Bank integrations are future and never sold as active; multi-user seats are not part of the offer; don't fabricate testimonials, logos, metrics or AI-accuracy/legal/tax claims (including for the `/metodo` PF/PJ method).
 - Brand name is written `OnliFin`; all copy in Brazilian Portuguese.
-- Visual direction is an "adding-machine tape" on a graphite desk: no cards, gradients or shadows. Fonts are Big Shoulders Display (headings), Hanken Grotesk (body) and Martian Mono (data/labels), loaded from Google Fonts.
+- Visual direction is an "adding-machine tape" on a graphite desk: no cards, gradients or shadows. Fonts are Big Shoulders Display (headings), Hanken Grotesk (body) and Martian Mono (data/labels), self-hosted in `public/fonts`.
 - Accessibility baseline: contrast, visible focus, keyboard navigation, semantic headings, reduced motion, adequate touch targets.

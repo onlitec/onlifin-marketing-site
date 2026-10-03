@@ -127,12 +127,20 @@ export const Hero = ({ onStart }: { onStart: () => void }) => (
             Escolher plano
             <ArrowRight size={20} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
           </button>
-          <a
-            href="#features"
-            className="text-base font-medium text-white underline decoration-dim/50 underline-offset-[7px] transition-colors hover:decoration-white"
-          >
-            Ver funcionalidades
-          </a>
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+            <a
+              href="#pricing"
+              className="inline-flex min-h-[44px] items-center text-base font-medium text-white underline decoration-dim/50 underline-offset-[7px] transition-colors hover:decoration-white"
+            >
+              Ver planos
+            </a>
+            <a
+              href="#features"
+              className="inline-flex min-h-[44px] items-center text-base font-medium text-dim underline decoration-desk-line underline-offset-[7px] transition-colors hover:text-white hover:decoration-white"
+            >
+              Ver funcionalidades
+            </a>
+          </div>
         </div>
         <p className="mt-6 font-mono text-xs uppercase tracking-[0.12em] text-dim">
           30 dias grátis · Sem cartão de crédito necessário
