@@ -189,7 +189,7 @@ export default function MetodoPage() {
         onSelectBillingCycle={setSelectedBillingCycle}
       />
       <Header onStart={openPlanSelector} home={false} />
-      <main>
+      <main id="main">
         {/* Hero */}
         <Desk>
           <a
@@ -462,7 +462,7 @@ export default function MetodoPage() {
           </Reveal>
         </Desk>
       </main>
-      <Footer />
+      <Footer home={false} />
     </div>
   );
 }

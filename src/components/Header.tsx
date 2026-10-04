@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Wordmark } from './Tape';
 import { getPlatformBaseUrl } from '../lib/platform';
@@ -13,9 +13,18 @@ const LINKS = [
 
 export const Header = ({ onStart, home = true }: { onStart: () => void; home?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
+
   const links = LINKS.map((l) => (!home && l.href.startsWith('#') ? { ...l, href: `/${l.href}` } : l));
 
   return (
+    <>
+    <a href="#main" className="skip-link">Ir para o conteúdo</a>
     <header className="sticky top-0 z-50 border-b border-desk-line bg-desk">
       <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4 px-5 sm:px-8">
         <a href={home ? '#top' : '/'} aria-label="OnliFin, início" className="text-white">
@@ -46,7 +55,7 @@ export const Header = ({ onStart, home = true }: { onStart: () => void; home?: b
             onClick={onStart}
             className="min-h-[44px] whitespace-nowrap bg-paper px-3.5 font-mono text-xs sm:px-5 sm:text-[0.8125rem] font-bold uppercase tracking-[0.1em] text-ink transition-colors hover:bg-vermilion-light"
           >
-            Começar grátis
+            Começar<span className="hidden min-[400px]:inline">&nbsp;grátis</span>
           </button>
           <button
             type="button"
@@ -79,5 +88,6 @@ export const Header = ({ onStart, home = true }: { onStart: () => void; home?: b
         </nav>
       )}
     </header>
+    </>
   );
 };

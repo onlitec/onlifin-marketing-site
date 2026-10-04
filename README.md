@@ -64,6 +64,5 @@ O workflow `Deploy Marketing Site` constrói e envia a imagem ao Docker Hub em p
 
 ## Pendências conhecidas
 
-- `framer-motion` está declarado e não é usado.
 - `tsconfig.app.json` usa `target ES2023`, que o TypeScript `~5.4` não aceita; o `vite build` não é afetado.
-- Fontes carregadas do Google Fonts (considerar hospedar localmente).
+- `npm run lint` quebra com `eslint-plugin-react-hooks@4` em ESLint 9.39 (`context.getSource is not a function`).

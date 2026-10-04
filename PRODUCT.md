@@ -7,7 +7,7 @@
 web
 
 ## Stack
-Existing codebase: React 18 + TypeScript + Vite + Tailwind 3, `lucide-react`, `framer-motion` (declared, currently unused). Served by Nginx from a Docker image (`onlifin-marketing-dev`, port 8081 in dev). Single page in `src/App.tsx`. Signup posts to `/api/rpc/signup_tenant` and `/api/rpc/login`, then redirects to the app via `window.__ONLIFIN_PLATFORM_BASE_URL__` (runtime config).
+Existing codebase: React 18 + TypeScript + Vite + Tailwind 3, `lucide-react`. Served by Nginx from a Docker image (`onlifin-marketing-dev`, port 8081 in dev). Single page in `src/App.tsx`. Signup posts to `/api/rpc/signup_tenant` and `/api/rpc/login`, then redirects to the app via `window.__ONLIFIN_PLATFORM_BASE_URL__` (runtime config).
 
 ## Users
 People and small businesses who need one centralized view of their financial life and want to stop depending on scattered spreadsheets and manual processes. Both personal (PF) and business (PJ) contexts. Source: user brief.
