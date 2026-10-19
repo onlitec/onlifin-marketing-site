@@ -409,7 +409,7 @@ export const Pricing = ({
 
       <div className="mt-12 grid grid-cols-1 gap-y-14 lg:grid-cols-3 lg:gap-y-0 lg:divide-x lg:divide-ink/25">
         {PLANS.map((plan, i) => (
-          <Reveal key={plan.code} delay={i * 70} className={`flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0 ${plan.highlighted ? 'max-lg:order-first' : ''}`}>
+          <Reveal key={plan.code} delay={i * 70} className="flex flex-col lg:px-9 lg:first:pl-0 lg:last:pr-0">
             <div className={`border-t-4 pt-4 ${plan.highlighted ? 'border-vermilion' : 'border-ink'}`}>
               <h3 className="font-display text-4xl font-extrabold uppercase leading-[1.05]">{plan.name}</h3>
               <p className="mt-2 text-base text-ink-mute">
